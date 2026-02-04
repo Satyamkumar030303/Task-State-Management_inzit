@@ -53,6 +53,13 @@ function App() {
     [tasks, filter, debouncedSearch]
     
   );
+  const completedCount= useMemo(()=>{
+    return tasks.filter((task)=> task.completed).length;
+  }, [tasks]);
+
+  const pendingCount= useMemo(()=>{
+    return tasks.filter((task)=> !task.completed).length;
+  }, [tasks]);
 
   const addTask=()=>{
     if(input.trim()==="")return;
@@ -118,6 +125,10 @@ function App() {
         value={search}
         onChange={(e)=> setSearch(e.target.value)}
         ></input>
+      </div>
+      <div className="task-stats">
+        <p> Completed: {completedCount}</p>
+        <p> Pending: {pendingCount}</p>
       </div>
       <div className="task-list">
           {filteredTasks.map(task => (
