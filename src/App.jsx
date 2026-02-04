@@ -1,8 +1,15 @@
 import { useContext, useState, useMemo} from 'react';
 import { TaskContext } from './context/TaskContext';
+import TaskItem from "./components/TaskItem";
+import { useRef, useEffect } from 'react';
+import { useDebounce } from "./hooks/useDebounce";
 import './App.css'
 
+
 function App() {
+
+  console.log("App rendered");
+
   const {tasks, dispatch}= useContext(TaskContext);
   const [input, setInput]= useState("");
 
@@ -10,6 +17,15 @@ function App() {
   const [editText, setEditText]= useState("");
 
   const [filter, setFilter]= useState("ALL");
+
+  const [search, setSearch]= useState("");
+
+  const debouncedSearch = useDebounce(search, 500);
+
+  const searchRef= useRef(null);
+   useEffect(()=>{
+    searchRef.current.focus();
+   },[]);
 
   const toggleTask=(id)=>{
     dispatch({
@@ -25,15 +41,18 @@ function App() {
     else if(filter==="PENDING"){
       return tasks.filter((task)=> !task.completed);
     }
+
+    else if(debouncedSearch.trim()!==""){
+      return tasks.filter((task)=>
+        task.text.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+    }
     else{
       return tasks;
     }},
-    [tasks, filter]
+    [tasks, filter, debouncedSearch]
+    
   );
-  
- 
-
-
 
   const addTask=()=>{
     if(input.trim()==="")return;
@@ -62,7 +81,7 @@ function App() {
     setEditId(task.id);
     setEditText(task.text);
 
-  }
+  };
   const saveEdit=()=>{
     dispatch({
       type: "EDIT_TASK",
@@ -73,7 +92,7 @@ function App() {
     });
     setEditId(null);
     setEditText("");
-  }
+  };
  
   return (
     <div className="App">
@@ -92,36 +111,31 @@ function App() {
           <option value="COMPLETED">Completed Task</option>
           <option value="PENDING">Pending Task</option>
         </select>
-        <input type="text" placeholder="Type To Search..."></input>
+        <input 
+        ref={searchRef}
+        type="text" 
+        placeholder="Type To Search..."
+        value={search}
+        onChange={(e)=> setSearch(e.target.value)}
+        ></input>
       </div>
       <div className="task-list">
-        {filteredTasks.map((task)=>(
-          
-          <div className="task-item" key={task.id}>
-            <input type="checkbox"
-            checked={task.completed}
-            onChange={()=>toggleTask(task.id)}
+          {filteredTasks.map(task => (
+            <TaskItem
+              key={task.id}
+              task={task}
+              toggleTask={toggleTask}
+              startEdit={startEdit}
+              deleteTask={deleteTask}
+              editId={editId}
+              editText={editText}
+              setEditText={setEditText}
+              saveEdit={saveEdit}
             />
-            {editId===task.id ?(
-              <>
-              <input
-              value={editText}
-              onChange={(e)=>setEditText(e.target.value)}
-              />
-              <button onClick={saveEdit}>Save</button>  
-              </>
-            ): (
-            <>
-              <span>{task.text}</span>
-              <p>{task.completed ? "Completed" : "Pending"}</p>
-              <button onClick={() => startEdit(task)}>Edit</button>
-            </>
-          )}
-            <button onClick={()=>deleteTask(task.id)}>Delete</button>
-       </div>
-        ))}
+          ))}
+        
+          </div>
 
-    </div>
     </div>
   );
 }
