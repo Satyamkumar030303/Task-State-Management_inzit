@@ -1,18 +1,44 @@
-import { useReducer, useState} from 'react';
-import { taskReducer } from './reducer/taskReducer';
+import { useContext, useState, useMemo} from 'react';
+import { TaskContext } from './context/TaskContext';
 import './App.css'
 
 function App() {
-  const [tasks, dispatch]= useReducer(taskReducer, []);
+  const {tasks, dispatch}= useContext(TaskContext);
   const [input, setInput]= useState("");
 
   const [editId, setEditId]= useState(null);
   const [editText, setEditText]= useState("");
 
+  const [filter, setFilter]= useState("ALL");
+
+  const toggleTask=(id)=>{
+    dispatch({
+      type: "TOGGLE_TASK",
+      payload: id
+    });
+  }
+
+  const filteredTasks= useMemo(()=>{
+    if(filter==="COMPLETED"){
+      return tasks.filter((task)=> task.completed);
+    }
+    else if(filter==="PENDING"){
+      return tasks.filter((task)=> !task.completed);
+    }
+    else{
+      return tasks;
+    }},
+    [tasks, filter]
+  );
+  
+ 
+
+
+
   const addTask=()=>{
     if(input.trim()==="")return;
     dispatch({
-    type: "ADD_Task",
+    type: "ADD_TASK",
     payload: {
       id: Date.now(),
       text: input,
@@ -25,7 +51,7 @@ function App() {
     
   const deleteTask=(id)=>{
     dispatch({
-      type: "DELETE_Task",
+      type: "DELETE_TASK",
       payload: id
     });
   };
@@ -39,7 +65,7 @@ function App() {
   }
   const saveEdit=()=>{
     dispatch({
-      type: "EDIT_Task",
+      type: "EDIT_TASK",
       payload: {
         id: editId,
         text: editText
@@ -61,17 +87,21 @@ function App() {
         </div>
       
       <div className="filters">
-        <select>
-          <option>All Tasks</option>
-          <option>Completed Task</option>
-          <option>Pending Task</option>
+        <select value={filter} onChange={(e)=> setFilter(e.target.value)}>
+          <option value="ALL">All Tasks</option>
+          <option value="COMPLETED">Completed Task</option>
+          <option value="PENDING">Pending Task</option>
         </select>
-        <input type="text" placeholder="Type To Serch..."></input>
+        <input type="text" placeholder="Type To Search..."></input>
       </div>
       <div className="task-list">
-        {tasks.map((task)=>(
+        {filteredTasks.map((task)=>(
+          
           <div className="task-item" key={task.id}>
-            <input type="checkbox"></input>
+            <input type="checkbox"
+            checked={task.completed}
+            onChange={()=>toggleTask(task.id)}
+            />
             {editId===task.id ?(
               <>
               <input
@@ -83,6 +113,7 @@ function App() {
             ): (
             <>
               <span>{task.text}</span>
+              <p>{task.completed ? "Completed" : "Pending"}</p>
               <button onClick={() => startEdit(task)}>Edit</button>
             </>
           )}
