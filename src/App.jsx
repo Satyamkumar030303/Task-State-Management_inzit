@@ -1,7 +1,6 @@
-import { useContext, useState, useMemo, useCallback} from 'react';
+import { useState, useMemo, useCallback} from 'react';
 import { useTasks } from './hooks/useTasks';
 import TaskItem from "./components/TaskItem";
-import { useRef, useEffect } from 'react';
 import { useDebounce } from "./hooks/useDebounce";
 import './Navbar.css'
 import './App.css'
