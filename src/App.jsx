@@ -1,5 +1,5 @@
-import { useContext, useState, useMemo} from 'react';
-import { TaskContext } from './context/TaskContext';
+import { useContext, useState, useMemo, useCallback} from 'react';
+import { useTasks } from './hooks/useTasks';
 import TaskItem from "./components/TaskItem";
 import { useRef, useEffect } from 'react';
 import { useDebounce } from "./hooks/useDebounce";
@@ -10,7 +10,7 @@ function App() {
 
   console.log("App rendered");
 
-  const {tasks, dispatch}= useContext(TaskContext);
+  const {tasks, dispatch}= useTasks();
   const [input, setInput]= useState("");
 
   const [editId, setEditId]= useState(null);
@@ -27,13 +27,7 @@ function App() {
     searchRef.current.focus();
    },[]);
 
-  const toggleTask=(id)=>{
-    dispatch({
-      type: "TOGGLE_TASK",
-      payload: id
-    });
-  }
-
+  
   const filteredTasks= useMemo(()=>{
     if(filter==="COMPLETED"){
       return tasks.filter((task)=> task.completed);
@@ -74,22 +68,30 @@ function App() {
   
   setInput("");
 };
+
+const toggleTask=useCallback((id)=>{
+    dispatch({
+      type: "TOGGLE_TASK",
+      payload: id
+    });
+  },[dispatch]);
+
     
-  const deleteTask=(id)=>{
+  const deleteTask=useCallback((id)=>{
     dispatch({
       type: "DELETE_TASK",
       payload: id
     });
-  };
+  }, [dispatch]);
  
 
 
-  const startEdit=(task)=>{
+  const startEdit=useCallback((task)=>{
     setEditId(task.id);
     setEditText(task.text);
+  },[]);
 
-  };
-  const saveEdit=()=>{
+  const saveEdit=useCallback(()=>{
     dispatch({
       type: "EDIT_TASK",
       payload: {
@@ -99,7 +101,7 @@ function App() {
     });
     setEditId(null);
     setEditText("");
-  };
+  }, [dispatch, editId, editText]);
  
   return (
     <div className="App">
