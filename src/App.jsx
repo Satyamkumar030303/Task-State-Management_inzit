@@ -34,18 +34,18 @@ function App() {
     if(filter==="COMPLETED"){
       return tasks.filter((task)=> task.completed);
     }
-    else if(filter==="PENDING"){
+    if(filter==="PENDING"){
       return tasks.filter((task)=> !task.completed);
     }
 
-    else if(debouncedSearch.trim()!==""){
+    if(debouncedSearch.trim()!==""){
       return tasks.filter((task)=>
         task.text.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
     }
-    else{
-      return tasks;
-    }},
+    
+      return result;
+    },
     [tasks, filter, debouncedSearch]
     
   );
