@@ -3,7 +3,9 @@ import { useTasks } from './hooks/useTasks';
 import TaskItem from "./components/TaskItem";
 import { useRef, useEffect } from 'react';
 import { useDebounce } from "./hooks/useDebounce";
+import './Navbar.css'
 import './App.css'
+import Navbar from './components/Navbar.jsx';
 
 
 function App() {
@@ -17,18 +19,18 @@ function App() {
   const [editText, setEditText]= useState("");
 
   const [filter, setFilter]= useState("ALL");
-
   const [search, setSearch]= useState("");
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const searchRef= useRef(null);
-   useEffect(()=>{
-    searchRef.current.focus();
-   },[]);
+  // const searchRef= useRef(null);
+  //  useEffect(()=>{
+  //   searchRef.current.focus();
+  //  },[]);
 
   
   const filteredTasks= useMemo(()=>{
+    let result= tasks;
     if(filter==="COMPLETED"){
       return tasks.filter((task)=> task.completed);
     }
@@ -104,6 +106,11 @@ const toggleTask=useCallback((id)=>{
   }, [dispatch, editId, editText]);
  
   return (
+    <>
+    <Navbar filter={filter} 
+    setFilter={setFilter} 
+    search={search} setSearch={setSearch} >
+      </Navbar>
     <div className="App">
       <h1>Task State Management</h1>
       <div className="task-form">
@@ -114,7 +121,7 @@ const toggleTask=useCallback((id)=>{
         <button onClick={addTask}>Add Task</button>
         </div>
       
-      <div className="filters">
+      {/* <div className="filters">
         <select value={filter} onChange={(e)=> setFilter(e.target.value)}>
           <option value="ALL">All Tasks</option>
           <option value="COMPLETED">Completed Task</option>
@@ -127,7 +134,7 @@ const toggleTask=useCallback((id)=>{
         value={search}
         onChange={(e)=> setSearch(e.target.value)}
         ></input>
-      </div>
+      </div> */}
       <div className="task-stats">
         <p> Completed: {completedCount}</p>
         <p> Pending: {pendingCount}</p>
@@ -150,6 +157,7 @@ const toggleTask=useCallback((id)=>{
           </div>
 
     </div>
+    </>
   );
 }
 

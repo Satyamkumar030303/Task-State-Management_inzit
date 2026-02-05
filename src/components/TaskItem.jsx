@@ -14,12 +14,13 @@ const TaskItem = React.memo(function TaskItem({
 
   return (
     <div className="task-item">
+      
       <input
         type="checkbox"
         checked={task.completed}
         onChange={() => toggleTask(task.id)}
       />
-
+      
       {editId === task.id ? (
         <>
           <input
@@ -37,6 +38,7 @@ const TaskItem = React.memo(function TaskItem({
       )}
 
       <button onClick={() => deleteTask(task.id)}>Delete</button>
+      
     </div>
   );
 });

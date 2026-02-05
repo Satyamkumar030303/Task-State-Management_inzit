@@ -5,38 +5,83 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.App {
+  padding-top: 80%;
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
+  text-align: center;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.task-form {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.task-form input {
+  width: 320px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
-.card {
-  padding: 2em;
+.task-form button {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.read-the-docs {
-  color: #888;
+.task-list {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+.task-item {
+  display: grid;
+  grid-template-columns: 40px 1fr 120px 120px;
+  align-items: center;
+
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+
+.task-item span {
+  text-align: center;
+  font-size: 16px;
+}
+ 
+
+.task-item p {
+  margin: 0;
+  font-size: 14px;
+  color: #5179c8;
+}
+
+
+.task-item button {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.task-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.task-item button.delete {
+  background: #ef4444;
+  color: white;
 }
