@@ -5,6 +5,7 @@ import { useDebounce } from "./hooks/useDebounce";
 import './Navbar.css'
 import './App.css'
 import Navbar from './components/Navbar.jsx';
+import { useForm } from 'react-hook-form';
 
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
   console.log("App rendered");
 
   const {tasks, dispatch}= useTasks();
-  const [input, setInput]= useState("");
+  // const [input, setInput]= useState("");
 
   const [editId, setEditId]= useState(null);
   const [editText, setEditText]= useState("");
@@ -56,19 +57,23 @@ function App() {
     return tasks.filter((task)=> !task.completed).length;
   }, [tasks]);
 
-  const addTask=()=>{
-    if(input.trim()==="")return;
+  const form = useForm();
+  const { register, handleSubmit, reset, formState } = form;
+  const { errors}= formState;
+
+  const addTask = (data) => {
+    if (!data.task.trim()) return;
+
     dispatch({
-    type: "ADD_TASK",
-    payload: {
-      id: Date.now(),
-      text: input,
-      completed: false
-    },
-  });
-  
-  setInput("");
-};
+      type: "ADD_TASK",
+      payload: {
+        id: Date.now(),
+        text: data.task,
+        completed: false
+      }
+    });
+    reset();
+  };
 
 const toggleTask=useCallback((id)=>{
     dispatch({
@@ -103,6 +108,10 @@ const toggleTask=useCallback((id)=>{
     setEditId(null);
     setEditText("");
   }, [dispatch, editId, editText]);
+
+
+
+
  
   return (
     <>
@@ -112,13 +121,21 @@ const toggleTask=useCallback((id)=>{
       </Navbar>
     <div className="App">
       <h1>Task State Management</h1>
-      <div className="task-form">
-        <input type="text"
+       
+      <form className="task-form" onSubmit={handleSubmit(addTask)} noValidate>
+        <input 
+        type="text"
          placeholder='Enter task' 
-         value={input} 
-         onChange={(e)=>setInput(e.target.value)}/>
-        <button onClick={addTask}>Add Task</button>
-        </div>
+         {...register("task", { required: "Task is required",
+          minLength: { value: 3, message: "Task must be at least 3 characters long"},
+           pattern: {
+            value: /^(?=.*[a-zA-Z0-9]).+$/,
+              message: "Task must contain at least one letter or number"},
+              })}/>
+          <p style={{ color: "red" }}>{errors.task?.message}</p>
+        <button type="submit">Add Task</button>
+      </form>
+        
       
       {/* <div className="filters">
         <select value={filter} onChange={(e)=> setFilter(e.target.value)}>
