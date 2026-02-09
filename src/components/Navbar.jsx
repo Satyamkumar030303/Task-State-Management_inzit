@@ -1,44 +1,35 @@
-import React, {useRef, useEffect} from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "./Navbar.css";
 
+function Navbar() {
+  const { isAuth, logout } = useAuth();
+  const navigate = useNavigate();
 
-function Navbar({filter, setFilter, search, setSearch}){
-    console.log("Navbar rendered");
-    const searchRef= useRef(null);
-    useEffect(()=>{
-        searchRef.current.focus();
-    },[]);
-    return (
-        <nav className="navbar">
-            <h2>Task Manager</h2>
+  const handleLogout = () => {
+    logout();
+    navigate("/dashboard", { replace: true });
+  };
 
-           <div className="nav-actions">
-            <button
-            className={filter === "ALL" ? "active" : ""}
-             onClick={()=> setFilter("ALL")}>
-             All
-             </button>
+  return (
+    <nav className="navbar">
+      <h3>Task Manager</h3>
 
-             <button
-                className={filter === "COMPLETED" ? "active" : ""}  
-                onClick={()=> setFilter("COMPLETED")}>
-                Completed
-             </button>
+      <div className="nav-actions">
+        <Link to="/dashboard">Dashboard</Link>
 
-             <button
-                className={filter === "PENDING" ? "active" : ""}  
-                onClick={()=> setFilter("PENDING")}>
-                Pending
-             </button>
-                <input 
-                ref={searchRef}
-                type="text"
-                placeholder="Search tasks..."
-                value={search}
-                onChange={(e)=> setSearch(e.target.value)}
-                />
+        {isAuth ? (
+          <>
             
-           </div>
-        </nav>
-    )
-} 
-export default React.memo(Navbar);
+            <Link to="/tasks">Tasks</Link>
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
+          <Link to="/login">Login</Link>  
+        )}
+      </div>
+    </nav>
+  );
+}
+
+export default Navbar;
